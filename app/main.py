@@ -1,5 +1,8 @@
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
+from fastapi.staticfiles import StaticFiles
+from fastapi.responses import RedirectResponse
+
 
 from app.routes import cliente, compra, health
 from app.core.config import settings
@@ -29,9 +32,12 @@ app.include_router(cliente.router, prefix="/api/clientes", tags=["clientes"])
 app.include_router(compra.router, prefix="/api/compras", tags=["compras"])
 app.include_router(health.router, tags=["health"])
 
+# Montar archivos estáticos
+app.mount("/static", StaticFiles(directory="static"), name="static")
+
 @app.get("/", tags=["root"])
 async def root():
     """
-    Endpoint raíz que redirige a la documentación
+    Endpoint raíz que redirige al index.html
     """
-    return {"message": "Bienvenido al Microservicio de Clientes. Visita /docs para la documentación."}
+    return RedirectResponse(url="/static/index.html")
